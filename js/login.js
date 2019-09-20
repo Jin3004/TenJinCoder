@@ -1,0 +1,36 @@
+﻿function redirect() {
+    location.href = "index.html";
+}
+
+
+function login() {
+
+    let jsonSendData = {
+        type: 2,
+        username: document.getElementById("id-username").value,
+        password: document.getElementById("id-password").value
+    };
+
+    $.ajax({
+
+        url: "../html/login.html",
+        type: "POST",
+        data: jsonSendData,
+        success: (data) => {
+            if (data == "0") {
+                document.getElementById("id-alert").innerHTML = "ログインに成功しました。3秒後にホームに戻ります。";
+                document.cookie = "user=;max-age=0";
+                document.cookie = "user=" + jsonSendData["username"] + ";path=/";
+                let timeoutID = setTimeout("redirect()", 3000);
+            }
+            if (data == "1") {
+                document.getElementById("id-alert").innerHTML = "そのようなユーザー名は存在しません。";
+            }
+            if (data == "2") {
+                document.getElementById("id-alert").innerHTML = "パスワードが間違っています。";
+            }
+        }
+
+    });
+
+}

@@ -1,0 +1,10 @@
+{
+  "writer": "Jin",
+  "sentence": "整数A,Bが与えられる。A+Bの和を出力せよ。",
+  "input": "A B",
+  "constraint": "A,Bはそれぞれ0以上100以下の整数である。",
+  "name": "Sum",
+  "output": "AとBの和を改行付きで出力せよ。",
+  "limitedTime": 2000,
+  "sampleTestCaseNum" : 2
+}

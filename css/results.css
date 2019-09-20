@@ -1,0 +1,38 @@
+body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  text-align: center;
+  background-color: #ffffff;
+}
+h1 {
+  color: #d3eced;
+  font-family: 'Italianno', cursive;
+  font-size: 60px;
+  text-align: center;
+  -webkit-text-stroke: 1px skyblue;
+  background-color: white;
+  margin: auto;
+}
+
+div.submit {
+  border-color: #e3e3e3;
+  border-radius: 4px;
+  border-style: solid;
+  }
+
+  table{
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    border-spacing: 0;
+  }
+  
+  table th{
+    border-bottom: solid 2px #fb5144;
+    padding: 10px 0;
+  }
+  
+  table td{
+    border-bottom: solid 2px #ddd;
+    text-align: center;
+    padding: 10px 0;
+  }

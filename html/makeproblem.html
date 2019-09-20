@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="../js/makeproblem.js"></script>
+    <script type="text/javascript" src="../js/jquery-3.4.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Italianno&display=swap" rel="stylesheet"> 
+    <link href="/css/makeproblem.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+
+    <h1>問題作成</h1>
+    <h2>問題名を入力してください。</h2>
+    <input type="text" id="id-name" />
+    <h2>問題文を入力してください。</h2>
+    <textarea id="id-sentence" rows="10" cols="40"></textarea>
+    <h2>この問題の入力を入力してください。</h2>
+    <input type="text" id="id-input" />
+    <h2>この問題の出力を入力してください。</h2>
+    <input type="text" id="id-output" />
+    <h2>この問題の制約を入力してください。</h2>
+    <input type="text" id="id-constraint" />
+
+    <h2>下記のテストケースのうち、いくつをサンプルケースとしますか(サンプルケースは問題フォームから閲覧が可能となります)。</h2>
+    <input type="number" id="sampleTestCase" />
+    <h2>入力用のテストケースを入力してください。(最後に改行を入れてください)</h2>
+    <div id="table">
+            <textarea id="0"></textarea>
+    </div>
+    <h2>出力用のテストケースを入力してください。(最後に改行を入れてください)</h2>
+    <div id="table2">
+            <textarea id="1"></textarea>
+    </div>
+    <button onclick="increaseTestcase()">テストケースを増やす</button>
+    <input type="button" onclick="makeProblem()" value="提出" />
+
+    <h4><font id="id-alert" color="red"></font></h4>
+
+
+</body>
+</html>
