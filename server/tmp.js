@@ -206,7 +206,7 @@ server.on('request', (req, res) => {
 
 
         if (req.url == '/') {//If request URL is null,access to index.html automaticly.
-            fs.readFile(rootDir + 'html/index.html', 'utf-8', (err, data) => {
+            fs.readFile('html/index.html', 'utf-8', (err, data) => {
                 if (err) {
                     res.writeHead(404, { 'Content-Type': 'text/plain' });
                     res.write('404 Not Found.');
