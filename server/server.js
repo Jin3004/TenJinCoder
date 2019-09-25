@@ -12,9 +12,13 @@ const server_root = __dirname;
 const document_root = server_root + "/../";
 const forbitten_files = ["password.txt", "token.txt", "server.js"];
 const mime_type = new Map([["html", "text/html"], ["css", "text/css"], ["js", "text/javascript"], ["json", "application/json"], ["ico", "image/ico"], ["txt", "text/plain"], ["cpp", "text/plain"]]);
-const isWindows = os.type().toString() === "Windows";
+const isWindows = os.type().toString() === "Windows_NT";
 //Whether the environment this app runs is Windows or not.
 //Declare constant variables.
+
+const ToAbsolute = (file) => {//Convert the given path to absolute path.
+    return document_root + file;
+}
 
 const ExistFile = (filename) => {
     try {
@@ -29,38 +33,39 @@ const ExistFile = (filename) => {
 
 const CreateUUID = () => {
     let chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split('');
-    for(let i = 0, len = chars.length; i < len; i++){
-        switch(chars[i]){
+    for (let i = 0, len = chars.length; i < len; i++) {
+        switch (chars[i]) {
             case 'x':
                 chars[i] = Math.floor(Math.random() * 16).toString(16);
 
         }
-        if(chars[i] === 'x')chars[i] = Math.floor(Math.random() * 16).toString(16);
-        else if(chars[i] === 'y')chars[i] = Math.floor(Math.random() * 4 + 8).toString(16);
+        if (chars[i] === 'x') chars[i] = Math.floor(Math.random() * 16).toString(16);
+        else if (chars[i] === 'y') chars[i] = Math.floor(Math.random() * 4 + 8).toString(16);
     }
     return chars.join('');
 };
 
-const Judge = (received) => {
+const Judge = (received, request, response) => {
     let cookie = new Map();
     {
         let string = request.headers.cookie;
         let tmp = string.split("; ");
-        for(let t of tmp){
+        for (let t of tmp) {
             let first = t.split('=')[0], second = t.split('=')[1];
             cookie.set(first, second);
         }
     }//Parse the cookie.
-    fs.readFileSync("../users/" + received["user"] + "/config/token.txt", "utf-8", (err, data) => {
-        if(err || data !== cookie["token"]){
-            fs.appendFile("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["user"] + ")", (err, data) => {console.error(err);});
+    fs.readFileSync(ToAbsolute("users/" + received["user"] + "/config/token.txt"), "utf-8", (err, data) => {
+        console.log(data);
+        if (err || (data !== cookie.get("token"))) {
+            fs.appendFileSync("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["user"] + ")", (err, data) => { console.error(err); });
             return 1;//Illegal login.
         }
     });
     let codename = "";
     {
         let max = -1;
-        const files = fs.readdirSync('../users/' + received["user"] + "/submission");
+        const files = fs.readdirSync(ToAbsolute("users/" + received["user"] + "/submission"));
         files.forEach((file) => {
             let filename = file.split('.')[0];
             try {
@@ -73,7 +78,7 @@ const Judge = (received) => {
     }//Get codename.
 
     {
-        process.chdir("../users/" + received["user"] + "/submission");
+        process.chdir(ToAbsolute("users/" + received["user"] + "/submission"));
         fs.writeFileSync(codename + ".cpp", received["code"], (err, data) => { console.error(err); });
         //Create the source file.
         process.chdir("../../../bin");
@@ -94,7 +99,12 @@ const Judge = (received) => {
             }
             result = resarr[val];
         }
-        fs.appendFileSync("../json/results.json", JSON.stringify({ user: received["user"], result: result, problem: received["prob"], codeName: codename }), (err, data) => {console.error(err);});
+        //fs.appendFileSync(ToAbsolute("json/results.json"), JSON.stringify({ user: received["user"], result: result, problem: received//["prob"], codeName: codename }), (err, data) => {console.error(err);});
+        let txt = fs.readFileSync(ToAbsolute("json/results.json"), "utf-8", (err, data) => { });
+        let json = JSON.parse(txt);
+        json.results.push({ user: received["user"], result: result, problem: received["prob"], codeName: codename });
+        txt = JSON.stringify(json);
+        fs.writeFileSync(ToAbsolute("json/results.json"), txt, (err, data) => { });
 
         process.chdir(server_root);
     }//Run the binary file to judge.
@@ -102,8 +112,8 @@ const Judge = (received) => {
     return 0;
 }
 
-const MakeAccount = (received) => {
-    
+const MakeAccount = (received, request, response) => {
+
     const username = received["username"];
     const password = received["password"];
     process.chdir("../users");
@@ -122,7 +132,7 @@ const MakeAccount = (received) => {
     }
 };
 
-const Login = (received) => {
+const Login = (received, request, response) => {
     const username = received["username"];
     const password = received["password"];
     process.chdir("../users");
@@ -139,20 +149,20 @@ const Login = (received) => {
     }
 };
 
-const MakeProblem = (received) => {
+const MakeProblem = (received, request, response) => {
 
     let cookie = new Map();
     {
         let string = request.headers.cookie;
         let tmp = string.split("; ");
-        for(let t of tmp){
+        for (let t of tmp) {
             let first = t.split('=')[0], second = t.split('=')[1];
             cookie.set(first, second);
         }
     }//Parse the cookie.
-    fs.readFileSync("../users/" + received["user"] + "/config/token.txt", "utf-8", (err, data) => {
-        if(err || data !== cookie["token"]){
-            fs.appendFile("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["user"] + ")", (err, data) => {console.error(err);});
+    fs.readFileSync(document_root + "../users/" + received["user"] + "/config/token.txt", "utf-8", (err, data) => {
+        if (err || data !== cookie["token"]) {
+            fs.appendFile("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["user"] + ")", (err, data) => { console.error(err); });
             return 1;//Illegal login.
         }
     });
@@ -221,7 +231,7 @@ const ReturnFile = (request, response) => {
         let tmp = url.split('?');
         url = tmp[0];
     }//Remove the query parameter.
-    if (url === '/')url = "html/redirect.html";
+    if (url === '/') url = "html/redirect.html";
     fs.readFile(document_root + url, "utf-8", (err, data) => {
         if (err) {
             response.writeHead(404, { "Content-Type": "text/plain" });
@@ -229,7 +239,7 @@ const ReturnFile = (request, response) => {
             return response.end();
         }
         let ext = "";
-        {   
+        {
             let tmp = url.split('.');
             ext = tmp[tmp.length - 1];
         }
@@ -242,17 +252,16 @@ const ReturnFile = (request, response) => {
 const func_arr = [Judge, MakeAccount, Login, MakeProblem];
 
 const RequestHandler = (request, response) => {
-    if(request.method === "GET"){
+    if (request.method === "GET") {
         ReturnFile(request, response);
     }
-    if(request.method === "POST"){
+    if (request.method === "POST") {
         request.on("data", (chunk) => {
             let received = JSON.parse(JSON.stringify(querystring.parse(decoder.write(chunk))));
-            response.write(String(func_arr[Number(String(received["type"]))](received)));
+            response.write(String(func_arr[Number(String(received["type"]))](received, request, response)));
             response.end();
         });
     }
 };
-
 server.on("request", RequestHandler);
 server.listen(process.env.PORT || 8080);
