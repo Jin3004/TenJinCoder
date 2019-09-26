@@ -55,13 +55,13 @@ const Judge = (received, request, response) => {
             cookie.set(first, second);
         }
     }//Parse the cookie.
-    fs.readFileSync(ToAbsolute("users/" + received["user"] + "/config/token.txt"), "utf-8", (err, data) => {
-        console.log(data);
-        if (err || (data !== cookie.get("token"))) {
+    {
+        data = fs.readFileSync(ToAbsolute("users/" + received["user"] + "/config/token.txt"), { encoding: "utf-8" });
+        if (data != cookie.get("token")) {
             fs.appendFileSync("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["user"] + ")", (err, data) => { console.error(err); });
             return 1;//Illegal login.
         }
-    });
+    }//Check if the token is correct or not.
     let codename = "";
     {
         let max = -1;
@@ -125,10 +125,11 @@ const MakeAccount = (received, request, response) => {
         fs.mkdir("submission", (err, folder) => { console.error(err); });
         process.chdir("config");
         fs.writeFileSync("password.txt", password, (err, data) => { console.error(err); });
-        fs.writeFileSync("token.txt", CreateUUID(), (err, data) => { console.error(err); });
+        const token = CreateUUID();
+        fs.writeFileSync("token.txt", token, (err, data) => { console.error(err); });
         process.chdir(server_root);
 
-        return 0;
+        return token;
     }
 };
 
@@ -160,16 +161,17 @@ const MakeProblem = (received, request, response) => {
             cookie.set(first, second);
         }
     }//Parse the cookie.
-    fs.readFileSync(document_root + "../users/" + received["user"] + "/config/token.txt", "utf-8", (err, data) => {
-        if (err || data !== cookie["token"]) {
-            fs.appendFile("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["user"] + ")", (err, data) => { console.error(err); });
+    {
+        data = fs.readFileSync(ToAbsolute("users/" + received["writer"] + "/config/token.txt"), { encoding: "utf-8" });
+        if (data != cookie.get("token")) {
+            fs.appendFileSync("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["writer"] + ")", (err, data) => { console.error(err); });
             return 1;//Illegal login.
         }
-    });
+    }//Check if the token is correct or not.
 
     let codename = 0;
     {
-        const folders = fs.readdirSync("../problem");
+        const folders = fs.readdirSync(ToAbsolute("problem"));
         let max = -1;
         folders.forEach((folder) => {
             try {
@@ -181,29 +183,29 @@ const MakeProblem = (received, request, response) => {
         if (max <= 8) codename = '0' + (max + 1);
         else codename = max + 1;
     }//Get next problem id.
-    process.chdir("../problem");
+    process.chdir(ToAbsolute("problem"));
     fs.mkdirSync(codename, (err, folder) => { console.error(err); });
     process.chdir(codename);
     fs.mkdirSync("in", (err, folder) => { console.error(err); });
     fs.mkdirSync("out", (err, folder) => { console.error(err); });
     process.chdir("in");
-    for (let i = 0; i < Number(rcvJson["sampleTestCaseNum"]); i++) {
-        fs.writeFileSync("sampletestcase" + i + ".txt", rcvJson["inputtestcase"][i], (err, data) => { if (err) console.log(err); });
+    for (let i = 0; i < Number(received["sampleTestCaseNum"]); i++) {
+        fs.writeFileSync("sampletestcase" + i + ".txt", received["inputtestcase"][i], (err, data) => { if (err) console.log(err); });
     }
 
-    for (let i = Number(rcvJson["sampleTestCaseNum"]); i < Number(rcvJson["testCaseNum"]); i++) {
-        fs.writeFileSync("testcase" + (i - Number(rcvJson["sampleTestCaseNum"])) + ".txt", rcvJson["inputtestcase"][i], (err, data) => { if (err) console.log(err); });
+    for (let i = Number(received["sampleTestCaseNum"]); i < Number(received["testCaseNum"]); i++) {
+        fs.writeFileSync("testcase" + (i - Number(received["sampleTestCaseNum"])) + ".txt", received["inputtestcase"][i], (err, data) => { if (err) console.log(err); });
     }
     //Create test cases for input.
 
     process.chdir("../out");
 
-    for (let i = 0; i < Number(rcvJson["sampleTestCaseNum"]); i++) {
-        fs.writeFileSync("sampletestcase" + i + ".txt", rcvJson["outputtestcase"][i], (err, data) => { if (err) console.log(err); });
+    for (let i = 0; i < Number(received["sampleTestCaseNum"]); i++) {
+        fs.writeFileSync("sampletestcase" + i + ".txt", received["outputtestcase"][i], (err, data) => { if (err) console.log(err); });
     }
 
-    for (let i = Number(rcvJson["sampleTestCaseNum"]); i < Number(rcvJson["testCaseNum"]); i++) {
-        fs.writeFileSync("testcase" + (i - Number(rcvJson["sampleTestCaseNum"])) + ".txt", rcvJson["outputtestcase"][i], (err, data) => { if (err) console.log(err); });
+    for (let i = Number(received["sampleTestCaseNum"]); i < Number(received["testCaseNum"]); i++) {
+        fs.writeFileSync("testcase" + (i - Number(received["sampleTestCaseNum"])) + ".txt", received["outputtestcase"][i], (err, data) => { if (err) console.log(err); });
     }
     //Create test cases for output.
     process.chdir("../");
@@ -257,8 +259,19 @@ const RequestHandler = (request, response) => {
     }
     if (request.method === "POST") {
         request.on("data", (chunk) => {
-            let received = JSON.parse(JSON.stringify(querystring.parse(decoder.write(chunk))));
-            response.write(String(func_arr[Number(String(received["type"]))](received, request, response)));
+            let received = new Map();
+            {
+                let tmp_received = decoder.write(chunk).split('&');
+                for(let t of tmp_received){
+                    let tmp = t.split('=');
+                    let first = tmp[0], second = tmp[1];
+                    second = decodeURIComponent(second);
+                    received.set(first, second);
+                }
+            }
+            const tmp_func = func_arr[Number(received.get("type"))];
+            console.log(received);
+            response.write(String(tmp_func(received, request, response)));
             response.end();
         });
     }

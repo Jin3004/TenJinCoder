@@ -104,8 +104,12 @@ function sendCode(){
             url : "../html/submitform.html",
             type : "POST",
             data : jsonSendData,
+            async: false,
             success : (data) => {
-                location.href = "results.html";
+                if(Number(data) === 1){
+                    document.getElementById("id-alert").innerHTML = "不正ログインを発見しました。直ちに本部へ報告します。";
+                }
+                else location.href = "results.html";
             },
             error : () => {
                 alert("Something went wrong.");

@@ -1,5 +1,5 @@
 ﻿let index = 2;
-function increaseTestcase(){
+function increaseTestcase() {
     let table = document.getElementById("table");
     let table2 = document.getElementById("table2");
     let t = document.createElement("textarea");
@@ -31,7 +31,7 @@ function judge() {
 
 function makeProblem() {
 
-    if(index > 20)document.getElementById("id-alert").innerHTML = "テストケースが多すぎます。";
+    if (index > 20) document.getElementById("id-alert").innerHTML = "テストケースが多すぎます。";
 
     else if (!judge()) {
         document.getElementById("id-alert").innerHTML = "欄を完全に埋めてから提出してください。";
@@ -59,8 +59,8 @@ function makeProblem() {
         testCaseNum: index / 2
     };
 
-    for(let i = 0; i < index; i++){
-        if(i % 2 == 0)jsonSendData["inputtestcase"].push(document.getElementById(i).value);
+    for (let i = 0; i < index; i++) {
+        if (i % 2 == 0) jsonSendData["inputtestcase"].push(document.getElementById(i).value);
         else jsonSendData["outputtestcase"].push(document.getElementById(i).value);
     }
 
@@ -71,8 +71,12 @@ function makeProblem() {
         data: JSON.stringify(jsonSendData),
         async: false,
         success: (data) => {
-            document.getElementById("id-alert").innerHTML = "問題を作成しました。問題フォームは";
-            document.getElementById("id-alert").innerHTML += '<a href="submitform.html?problem=' + data + '">こちら</a>';
+            if (Number(data) === 1) {
+                document.getElementById("id-alert").innerHTML = "不正ログインを発見しました。直ちに本部へ報告します。";
+            } else {
+                document.getElementById("id-alert").innerHTML = "問題を作成しました。問題フォームは";
+                document.getElementById("id-alert").innerHTML += '<a href="submitform.html?problem=' + data + '">こちら</a>';
+            }
         }
 
     })
