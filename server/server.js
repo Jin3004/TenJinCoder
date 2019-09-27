@@ -116,13 +116,13 @@ const MakeAccount = (received, request, response) => {
 
     const username = received["username"];
     const password = received["password"];
-    process.chdir("../users");
+    process.chdir(ToAbsolute("users"));
     if (ExistFile(username)) return -1;//Cannot make his account.
     else {
-        fs.mkdir(username, (err, folder) => { console.error(err); });
+        fs.mkdirSync(username, (err, folder) => { console.error(err); });
         process.chdir(username);
-        fs.mkdir("config", (err, folder) => { console.error(err); });
-        fs.mkdir("submission", (err, folder) => { console.error(err); });
+        fs.mkdirSync("config", (err, folder) => { console.error(err); });
+        fs.mkdirSync("submission", (err, folder) => { console.error(err); });
         process.chdir("config");
         fs.writeFileSync("password.txt", password, (err, data) => { console.error(err); });
         const token = CreateUUID();
@@ -136,7 +136,7 @@ const MakeAccount = (received, request, response) => {
 const Login = (received, request, response) => {
     const username = received["username"];
     const password = received["password"];
-    process.chdir("../users");
+    process.chdir(ToAbsolute("users"));
     if (!ExistFile(username)) {
         process.chdir(server_root);
         return 1;
@@ -205,7 +205,7 @@ const MakeProblem = (received, request, response) => {
     }
 
     for (let i = Number(received["sampleTestCaseNum"]); i < Number(received["testCaseNum"]); i++) {
-        fs.writeFileSync("testcase" + (i - Number(received["sampleTestCaseNum"])) + ".txt", received["outputtestcase"][i], (err, data) => { if (err) console.log(err); });
+        fs.writeFileSync("testcase" + (i - Number(received["sampleTestCaseNum"])) + ".txt", received["outputtestcase"][i], (err, data) => { if (err) console.log(err); });  
     }
     //Create test cases for output.
     process.chdir("../");
@@ -259,18 +259,18 @@ const RequestHandler = (request, response) => {
     }
     if (request.method === "POST") {
         request.on("data", (chunk) => {
-            let received = new Map();
-            {
-                let tmp_received = decoder.write(chunk).split('&');
-                for(let t of tmp_received){
-                    let tmp = t.split('=');
-                    let first = tmp[0], second = tmp[1];
-                    second = decodeURIComponent(second);
-                    received.set(first, second);
-                }
-            }
-            const tmp_func = func_arr[Number(received.get("type"))];
+            let received = JSON.parse(decoder.write(chunk));
+            //{
+            //    let tmp_received = decoder.write(chunk).split('&');
+            //    for(let t of tmp_received){
+            //        let tmp = t.split('=');
+            //        let first = tmp[0], second = tmp[1];
+            //        second = decodeURIComponent(second);
+            //        received.set(first, second);
+            //    }
+            //}
             console.log(received);
+            const tmp_func = func_arr[Number(received.type)];
             response.write(String(tmp_func(received, request, response)));
             response.end();
         });

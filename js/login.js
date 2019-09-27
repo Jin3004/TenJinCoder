@@ -15,7 +15,7 @@ function login() {
 
         url: "../html/login.html",
         type: "POST",
-        data: jsonSendData,
+        data: JSON.parse(jsonSendData),
         success: (data) => {
             if (data == "0") {
                 document.getElementById("id-alert").innerHTML = "ログインに成功しました。3秒後にホームに戻ります。";

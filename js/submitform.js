@@ -103,7 +103,7 @@ function sendCode(){
 
             url : "../html/submitform.html",
             type : "POST",
-            data : jsonSendData,
+            data : JSON.stringify(jsonSendData),
             async: false,
             success : (data) => {
                 if(Number(data) === 1){

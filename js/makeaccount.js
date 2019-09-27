@@ -20,14 +20,13 @@ function makeAccount(){
 
         url : "../html/makeaccount.html",
         type : "POST",
-        data : jsonSendData,
+        data : JSON.stringify(jsonSendData),
         async: false,
         success : (data) => {
             if(Number(data) === -1){
                 document.getElementById("id-alert").innerHTML = "そのユーザー名は既に存在しています。";
             }else{
                 document.getElementById("id-alert").innerHTML = "アカウントの作成に成功しました。3秒後にホームに戻ります。";
-                document.cookie = "user=;max-age=0";
                 document.cookie = "user=" + document.getElementById("id-username").value + ";token= " + data + ";path=/";
                 let timeOutID = setTimeout("redirect()", 3000);
             }
