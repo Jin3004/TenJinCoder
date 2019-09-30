@@ -145,7 +145,10 @@ const Login = (received, request, response) => {
         process.chdir("config");
         const correct_password = fs.readFileSync("password.txt", "utf-8", (err, data) => { console.error(err); });
         process.chdir(server_root);
-        if (correct_password === password) return 0;//Can log in.
+        if (correct_password === password){
+            let data = fs.readFileSync(ToAbsolute("users/" + username + "/config/token.txt"), {encoding: "utf-8"});
+            return data;
+        }//Can log in.
         else return 2;//Cannot.
     }
 };
@@ -162,7 +165,7 @@ const MakeProblem = (received, request, response) => {
         }
     }//Parse the cookie.
     {
-        data = fs.readFileSync(ToAbsolute("users/" + received["writer"] + "/config/token.txt"), { encoding: "utf-8" });
+        let data = fs.readFileSync(ToAbsolute("users/" + received["writer"] + "/config/token.txt"), { encoding: "utf-8" });
         if (data != cookie.get("token")) {
             fs.appendFileSync("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["writer"] + ")", (err, data) => { console.error(err); });
             return 1;//Illegal login.
@@ -260,15 +263,6 @@ const RequestHandler = (request, response) => {
     if (request.method === "POST") {
         request.on("data", (chunk) => {
             let received = JSON.parse(decoder.write(chunk));
-            //{
-            //    let tmp_received = decoder.write(chunk).split('&');
-            //    for(let t of tmp_received){
-            //        let tmp = t.split('=');
-            //        let first = tmp[0], second = tmp[1];
-            //        second = decodeURIComponent(second);
-            //        received.set(first, second);
-            //    }
-            //}
             console.log(received);
             const tmp_func = func_arr[Number(received.type)];
             response.write(String(tmp_func(received, request, response)));

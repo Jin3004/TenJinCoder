@@ -15,19 +15,20 @@ function login() {
 
         url: "../html/login.html",
         type: "POST",
-        data: JSON.parse(jsonSendData),
+        data: JSON.stringify(jsonSendData),
         success: (data) => {
-            if (data == "0") {
-                document.getElementById("id-alert").innerHTML = "ログインに成功しました。3秒後にホームに戻ります。";
-                document.cookie = "user=;max-age=0";
-                document.cookie = "user=" + jsonSendData["username"] + ";path=/";
-                let timeoutID = setTimeout("redirect()", 3000);
-            }
-            if (data == "1") {
+            if (Number(data) === 1) {
                 document.getElementById("id-alert").innerHTML = "そのようなユーザー名は存在しません。";
             }
-            if (data == "2") {
+            else if (Number(data) === 2) {
                 document.getElementById("id-alert").innerHTML = "パスワードが間違っています。";
+            } else {
+                document.getElementById("id-alert").innerHTML = "ログインに成功しました。3秒後にホームに戻ります。";
+                document.cookie = "user=;max-age=0";
+                document.cookie = "token=;max-age=0";
+                alert(data);
+                document.cookie = "user=" + jsonSendData["username"] + ";token=" + data + ";path=/";
+                let timeoutID = setTimeout("redirect()", 3000);
             }
         }
 
