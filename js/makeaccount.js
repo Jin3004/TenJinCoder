@@ -27,7 +27,7 @@ function makeAccount() {
                 document.getElementById("id-alert").innerHTML = "そのユーザー名は既に存在しています。";
             } else {
                 document.getElementById("id-alert").innerHTML = "アカウントの作成に成功しました。3秒後にホームに戻ります。";
-                document.cookie = "user=" + document.getElementById("id-username").value + ";token= " + data + ";path=/";
+                //document.cookie = "user=" + document.getElementById("id-username").value + ";token= " + data + ";path=/";
                 let timeOutID = setTimeout("redirect()", 3000);
             }
         },

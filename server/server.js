@@ -1,3 +1,5 @@
+//const Cookie = require("./../library/js.cookie-2.2.1.min.js");
+import Cookies from "js-cookie";
 const http = require('http');
 const fs = require('fs');
 const querystring = require('querystring');
@@ -14,6 +16,7 @@ const forbitten_files = ["password.txt", "token.txt", "server.js"];
 const mime_type = new Map([["html", "text/html"], ["css", "text/css"], ["js", "text/javascript"], ["json", "application/json"], ["ico", "image/ico"], ["txt", "text/plain"], ["cpp", "text/plain"]]);
 //Whether the environment this app runs is Windows or not.
 //Declare constant variables.
+
 
 const ToAbsolute = (file) => {//Convert the given path to absolute path.
     return document_root + file;
@@ -128,6 +131,11 @@ const MakeAccount = (received, request, response) => {
         fs.writeFileSync("token.txt", token, (err, data) => { console.error(err); });
         process.chdir(server_root);
 
+        Cookie.set("user", username);
+        Cookie.set("token", token);
+
+        console.log(Cookie.get());
+
         return token;
     }
 };
@@ -166,7 +174,7 @@ const MakeProblem = (received, request, response) => {
     {
         let data = fs.readFileSync(ToAbsolute("users/" + received["writer"] + "/config/token.txt"), { encoding: "utf-8" });
         if (data != cookie.get("token")) {
-            fs.appendFileSync("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["writer"] + ")", (err, data) => { console.error(err); });
+            fs.appendFileSync("log.txt", "[ILLEGAL_LOGIN]: Detect illegal login(@" + received["writer"] + ")\n", (err, data) => { console.error(err); });
             return 1;//Illegal login.
         }
     }//Check if the token is correct or not.

@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/Jin3004/TenJinCoder/issues"
   },
-  "homepage": "https://github.com/Jin3004/TenJinCoder#readme"
+  "homepage": "https://github.com/Jin3004/TenJinCoder#readme",
+  "dependencies": {
+    "js-cookie": "^2.2.1"
+  }
 }
