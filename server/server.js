@@ -12,7 +12,6 @@ const server_root = __dirname;
 const document_root = server_root + "/../";
 const forbitten_files = ["password.txt", "token.txt", "server.js"];
 const mime_type = new Map([["html", "text/html"], ["css", "text/css"], ["js", "text/javascript"], ["json", "application/json"], ["ico", "image/ico"], ["txt", "text/plain"], ["cpp", "text/plain"]]);
-const isWindows = os.type().toString() === "Windows_NT";
 //Whether the environment this app runs is Windows or not.
 //Declare constant variables.
 
@@ -83,7 +82,7 @@ const Judge = (received, request, response) => {
         //Create the source file.
         process.chdir("../../../bin");
         let cmd = "";
-        cmd += isWindows ? "judge.exe " : "./judge ";
+        cmd += "./judge ";
         cmd += received["prob"] + " " + received["user"] + " " + received["limitedTime"] + " " + codename;
         const stdout = execSync(cmd).toString();
         //Run the command.
