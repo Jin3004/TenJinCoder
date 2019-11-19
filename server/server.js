@@ -1,5 +1,4 @@
 //const Cookie = require("./../library/js.cookie-2.2.1.min.js");
-import Cookies from "js-cookie";
 const http = require('http');
 const fs = require('fs');
 const querystring = require('querystring');
@@ -131,8 +130,8 @@ const MakeAccount = (received, request, response) => {
         fs.writeFileSync("token.txt", token, (err, data) => { console.error(err); });
         process.chdir(server_root);
 
-        Cookie.set("user", username);
-        Cookie.set("token", token);
+        response.headers.cookie("user", username, {path: '/'});
+        response.headers.cookie("token", token, {path: '/'});
 
         console.log(Cookie.get());
 
