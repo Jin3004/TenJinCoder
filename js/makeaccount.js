@@ -28,6 +28,9 @@ function makeAccount() {
             } else {
                 document.getElementById("id-alert").innerHTML = "アカウントの作成に成功しました。3秒後にホームに戻ります。";
                 //document.cookie = "user=" + document.getElementById("id-username").value + ";token= " + data + ";path=/";
+                Cookies.set("user", document.getElementById("id-username").value, {path: '/'});
+                Cookies.set("token", data, {path: '/'});
+
                 let timeOutID = setTimeout("redirect()", 3000);
             }
         },

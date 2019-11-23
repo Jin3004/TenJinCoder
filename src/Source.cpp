@@ -49,9 +49,8 @@ int main(int argc, char** argv) {
   //Make testcase directory path.
 
 
-  std::string program = "";
+  std::string program = "./";
   program += std::string(argv[4]);
-  program += ".exe";
   //execute file's name.
 
   for (const fs::directory_entry& x : fs::directory_iterator(testcasePath + "/in")) {//Search all sample testcase files.

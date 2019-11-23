@@ -26,8 +26,20 @@ window.onload = () => {
 				string += "</td>";
 
 				string += "<td>";
-				string += data["results"][i]["result"];
-				string += "</td>";
+				//string += "<font color=\"red\">" + data["results"][i]["result"] + "</font>";
+				
+        switch(data["results"][i]["result"]){
+        
+          case "AC":
+            string += "<font color=\"green\">" + data["results"][i]["result"] + "</font>";
+            break;
+          default:
+            string += "<font color=\"yellow\">" + data["results"][i]["result"] + "</font>";
+            break;
+
+        }
+
+        string += "</td>";
 
 				string += "<td>";
 				string +="<a href=\"details.html?user=";

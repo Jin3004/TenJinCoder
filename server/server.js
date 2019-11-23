@@ -50,6 +50,7 @@ const Judge = (received, request, response) => {
     let cookie = new Map();
     {
         let string = request.headers.cookie;
+        console.log("the current cookie: ", string);
         let tmp = string.split("; ");
         for (let t of tmp) {
             let first = t.split('=')[0], second = t.split('=')[1];
@@ -130,10 +131,10 @@ const MakeAccount = (received, request, response) => {
         fs.writeFileSync("token.txt", token, (err, data) => { console.error(err); });
         process.chdir(server_root);
 
-        response.headers.cookie("user", username, {path: '/'});
-        response.headers.cookie("token", token, {path: '/'});
+        //response.headers.cookie("user", username, {path: '/'});
+        //response.headers.cookie("token", token, {path: '/'});
 
-        console.log(Cookie.get());
+        //console.log(Cookie.get());
 
         return token;
     }
