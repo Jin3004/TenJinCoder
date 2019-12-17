@@ -24,10 +24,12 @@ function login() {
                 document.getElementById("id-alert").innerHTML = "パスワードが間違っています。";
             } else {
                 document.getElementById("id-alert").innerHTML = "ログインに成功しました。3秒後にホームに戻ります。";
-                document.cookie = "user=;max-age=0";
-                document.cookie = "token=;max-age=0";
+                //document.cookie = "user=;max-age=0";
+                //document.cookie = "token=;max-age=0";
                 alert(data);
-                document.cookie = "user=" + jsonSendData["username"] + ";token=" + data + ";path=/";
+                Cookies.set("user", jsonSendData["username"], {path: '/'});
+                Cookies.set("token", data, {path: '/'});
+                //document.cookie = "user=" + jsonSendData["username"] + ";token=" + data + ";path=/";
                 let timeoutID = setTimeout("redirect()", 3000);
             }
         }
