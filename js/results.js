@@ -8,11 +8,11 @@ window.onload = () => {
 		success : (data) => {
 		
 			let string = "";
+      const num = data["results"].length;
 
-			for(let i = 0; i < data["results"].length; i++){
+			for(let i = 0; i < num; i++){
 
-
-				string += "<tr>";
+				string += (i === num - 1) ? "<tr class=\"bottomrect\">" : "<tr>";
 
 				string += "<td>";
 				string += data["results"][i]["user"];
@@ -31,10 +31,10 @@ window.onload = () => {
         switch(data["results"][i]["result"]){
         
           case "AC":
-            string += "<font color=\"green\">" + data["results"][i]["result"] + "</font>";
+            string += "<span style=\"background-color: #c0c0c0\"><font color=\"#98fb98\">" + data["results"][i]["result"] + "</font></span>";
             break;
           default:
-            string += "<font color=\"yellow\">" + data["results"][i]["result"] + "</font>";
+            string += "<span style=\"background-color: #c0c0c0\"><font color=\"yellow\">" + data["results"][i]["result"] + "</font></span>";
             break;
 
         }

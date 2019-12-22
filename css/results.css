@@ -36,3 +36,8 @@ div.submit {
     text-align: center;
     padding: 10px 0;
   }
+
+
+.bottomrect{
+  border: solid red;
+}
